@@ -1,3 +1,16 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<h3>TTV Google 4</h3>
+    
+<button onclick="readAloud()">Read Aloud</button>
+<button onclick="pauseSpeech()">Pause</button>
+<button onclick="resumeSpeech()">Resume</button>
+<button onclick="stopSpeech()">Stop</button>
+
+<select id="voiceSelect"></select>
+
 <script>
 let voices = [];
 let utterance = null;
@@ -61,3 +74,6 @@ async function populateVoiceList() {
 speechSynthesis.onvoiceschanged = populateVoiceList;
 window.onload = populateVoiceList;
 </script>
+
+</body>
+</html>
