@@ -1,0 +1,74 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<button onclick="readAloud()">Read Aloud</button>
+<button onclick="pauseSpeech()">Pause</button>
+<button onclick="resumeSpeech()">Resume</button>
+<button onclick="stopSpeech()">Stop</button>
+
+<select id="voiceSelect"></select>
+
+<script>
+let voices = [];
+let utterance = null;
+
+function loadVoices() {
+    voices = speechSynthesis.getVoices();
+    const voiceSelect = document.getElementById("voiceSelect");
+    voiceSelect.innerHTML = "";
+
+    let defaultIndex = 0;
+
+    voices.forEach((voice, index) => {
+        const option = document.createElement("option");
+        option.value = index;
+        option.textContent = `${voice.name} — ${voice.lang}`;
+        voiceSelect.appendChild(option);
+
+        // Automatically select Catherine if available
+        if (voice.name.toLowerCase().includes("catherine")) {
+            defaultIndex = index;
+        }
+    });
+
+    // Set Catherine as default (if found)
+    voiceSelect.value = defaultIndex;
+}
+
+// Some browsers load voices asynchronously
+speechSynthesis.onvoiceschanged = loadVoices;
+
+function readAloud() {
+    fetch("text.txt")
+        .then(response => response.text())
+        .then(text => {
+            speechSynthesis.cancel();
+
+            utterance = new SpeechSynthesisUtterance(text);
+
+            const selectedIndex = document.getElementById("voiceSelect").value;
+            if (voices[selectedIndex]) {
+                utterance.voice = voices[selectedIndex];
+            }
+
+            speechSynthesis.speak(utterance);
+        })
+        .catch(err => console.error("Error loading text.txt:", err));
+}
+
+function pauseSpeech() {
+    if (speechSynthesis.speaking && !speechSynthesis.paused) speechSynthesis.pause();
+}
+
+function resumeSpeech() {
+    if (speechSynthesis.paused) speechSynthesis.resume();
+}
+
+function stopSpeech() {
+    speechSynthesis.cancel();
+}
+</script>
+
+</body>
+</html>

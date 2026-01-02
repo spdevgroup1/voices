@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<button onclick="readFile()">Read Aloud</button>
+
+<script>
+function readFile() {
+    fetch("textfile1.txt")
+        .then(response => response.text())
+        .then(text => {
+            const utterance = new SpeechSynthesisUtterance(text);
+            speechSynthesis.speak(utterance);
+        })
+        .catch(err => console.error("Error loading file:", err));
+}
+</script>
+
+</body>
+</html>

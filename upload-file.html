@@ -1,0 +1,31 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<input type="file" id="fileInput" accept=".txt">
+<button onclick="readAloud()">Read Aloud</button>
+
+<script>
+function readAloud() {
+    const fileInput = document.getElementById("fileInput");
+    const file = fileInput.files[0];
+
+    if (!file) {
+        alert("Please select a text file first.");
+        return;
+    }
+
+    const reader = new FileReader();
+    reader.onload = function(e) {
+        const text = e.target.result;
+
+        const utterance = new SpeechSynthesisUtterance(text);
+        speechSynthesis.speak(utterance);
+    };
+
+    reader.readAsText(file);
+}
+</script>
+
+</body>
+</html>

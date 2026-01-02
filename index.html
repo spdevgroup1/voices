@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Audio Player with Text Display</title>
+<style>
+    body {
+        font-family: Arial, sans-serif;
+        margin: 20px;
+    }
+    #textContent {
+        margin-top: 20px;
+        padding: 10px;
+        border: 1px solid #ccc;
+        background: #f9f9f9;
+        white-space: pre-wrap; /* Preserve line breaks */
+    }
+    button {
+        padding: 10px 15px;
+        font-size: 16px;
+        cursor: pointer;
+    }
+</style>
+</head>
+<body>
+
+<h2>Audio Player with Text Display</h2>
+
+<!-- Audio element -->
+<audio id="audioPlayer" controls>
+    <source src="audio.mp3" type="audio/mpeg">
+    Your browser does not support the audio element.
+</audio>
+<br><br>
+
+<!-- Button to trigger both actions -->
+<button id="playAndLoad">Play Audio & Show Text</button>
+
+<!-- Text display area -->
+<div id="textContent">Text content will appear here...</div>
+
+<script>
+document.getElementById('playAndLoad').addEventListener('click', function () {
+    const audio = document.getElementById('audioPlayer');
+    const textDiv = document.getElementById('textContent');
+
+    // Play audio
+    audio.play().catch(err => {
+        console.error("Audio play failed:", err);
+    });
+
+    // Fetch and display text file
+    fetch('textfile.txt')
+        .then(response => {
+            if (!response.ok) {
+                throw new Error(`HTTP error! Status: ${response.status}`);
+            }
+            return response.text();
+        })
+        .then(data => {
+            textDiv.textContent = data;
+        })
+        .catch(error => {
+            textDiv.textContent = "Error loading text file.";
+            console.error(error);
+        });
+});
+</script>
+
+</body>
+</html>

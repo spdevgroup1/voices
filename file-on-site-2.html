@@ -1,0 +1,44 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<button onclick="readAloud()">Read Aloud</button>
+<button onclick="pauseSpeech()">Pause</button>
+<button onclick="resumeSpeech()">Resume</button>
+<button onclick="stopSpeech()">Stop</button>
+
+<script>
+let utterance = null;
+
+function readAloud() {
+    // Load the external text file
+    fetch("textfile.txt")
+        .then(response => response.text())
+        .then(text => {
+            speechSynthesis.cancel(); // stop any previous speech
+
+            utterance = new SpeechSynthesisUtterance(text);
+            speechSynthesis.speak(utterance);
+        })
+        .catch(err => console.error("Error loading textfile.txt:", err));
+}
+
+function pauseSpeech() {
+    if (speechSynthesis.speaking && !speechSynthesis.paused) {
+        speechSynthesis.pause();
+    }
+}
+
+function resumeSpeech() {
+    if (speechSynthesis.paused) {
+        speechSynthesis.resume();
+    }
+}
+
+function stopSpeech() {
+    speechSynthesis.cancel();
+}
+</script>
+
+</body>
+</html>

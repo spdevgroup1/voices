@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html>
+<body>
+
+<button onclick="readAloud()">Read Aloud</button>
+<button onclick="pauseSpeech()">Pause</button>
+<button onclick="resumeSpeech()">Resume</button>
+<button onclick="stopSpeech()">Stop</button>
+
+<select id="voiceSelect"></select>
+
+<script>
+let voices = [];
+let utterance = null;
+
+// Load available voices
+function loadVoices() {
+    voices = speechSynthesis.getVoices();
+
+    const voiceSelect = document.getElementById("voiceSelect");
+    voiceSelect.innerHTML = "";
+
+    voices.forEach((voice, index) => {
+        const option = document.createElement("option");
+        option.value = index;
+        option.textContent = `${voice.name} — ${voice.lang} ${voice.gender ? "(" + voice.gender + ")" : ""}`;
+        voiceSelect.appendChild(option);
+    });
+}
+
+// Some browsers load voices async
+speechSynthesis.onvoiceschanged = loadVoices;
+
+function readAloud() {
+    fetch("text.txt")
+        .then(response => response.text())
+        .then(text => {
+            speechSynthesis.cancel();
+
+            utterance = new SpeechSynthesisUtterance(text);
+
+            // Apply selected voice
+            const selectedIndex = document.getElementById("voiceSelect").value;
+            if (voices[selectedIndex]) {
+                utterance.voice = voices[selectedIndex];
+            }
+
+            speechSynthesis.speak(utterance);
+        })
+        .catch(err => console.error("Error loading text.txt:", err));
+}
+
+function pauseSpeech() {
+    if (speechSynthesis.speaking && !speechSynthesis.paused) {
+        speechSynthesis.pause();
+    }
+}
+
+function resumeSpeech() {
+    if (speechSynthesis.paused) {
+        speechSynthesis.resume();
+    }
+}
+
+function stopSpeech() {
+    speechSynthesis.cancel();
+}
+</script>
+
+</body>
+</html>
