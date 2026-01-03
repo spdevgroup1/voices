@@ -1,7 +1,9 @@
 <!DOCTYPE html>
 <html>
 <body>
-
+<H3>TTV1
+    
+</H3>
 <button onclick="readAloud()">Read Aloud</button>
 <button onclick="pauseSpeech()">Pause</button>
 <button onclick="resumeSpeech()">Resume</button>
@@ -13,22 +15,44 @@
 let voices = [];
 let utterance = null;
 
-// Load available voices
 function loadVoices() {
     voices = speechSynthesis.getVoices();
 
     const voiceSelect = document.getElementById("voiceSelect");
     voiceSelect.innerHTML = "";
 
-    voices.forEach((voice, index) => {
+    // Sort voices: Google voices first, then others
+    const sortedVoices = voices.sort((a, b) => {
+        const aGoogle = a.name.toLowerCase().includes("google");
+        const bGoogle = b.name.toLowerCase().includes("google");
+        return (aGoogle === bGoogle) ? 0 : aGoogle ? -1 : 1;
+    });
+
+    let defaultIndex = 0;
+
+    sortedVoices.forEach((voice, index) => {
         const option = document.createElement("option");
         option.value = index;
-        option.textContent = `${voice.name} — ${voice.lang} ${voice.gender ? "(" + voice.gender + ")" : ""}`;
+        option.textContent = `${voice.name} — ${voice.lang}`;
         voiceSelect.appendChild(option);
+
+        // Prefer Catherine if available
+        if (voice.name.toLowerCase().includes("catherine")) {
+            defaultIndex = index;
+        }
     });
+
+    // If Catherine not found, default to first Google voice
+    if (defaultIndex === 0) {
+        const googleIndex = sortedVoices.findIndex(v =>
+            v.name.toLowerCase().includes("google")
+        );
+        if (googleIndex !== -1) defaultIndex = googleIndex;
+    }
+
+    voiceSelect.value = defaultIndex;
 }
 
-// Some browsers load voices async
 speechSynthesis.onvoiceschanged = loadVoices;
 
 function readAloud() {
@@ -39,7 +63,6 @@ function readAloud() {
 
             utterance = new SpeechSynthesisUtterance(text);
 
-            // Apply selected voice
             const selectedIndex = document.getElementById("voiceSelect").value;
             if (voices[selectedIndex]) {
                 utterance.voice = voices[selectedIndex];
@@ -51,15 +74,11 @@ function readAloud() {
 }
 
 function pauseSpeech() {
-    if (speechSynthesis.speaking && !speechSynthesis.paused) {
-        speechSynthesis.pause();
-    }
+    if (speechSynthesis.speaking && !speechSynthesis.paused) speechSynthesis.pause();
 }
 
 function resumeSpeech() {
-    if (speechSynthesis.paused) {
-        speechSynthesis.resume();
-    }
+    if (speechSynthesis.paused) speechSynthesis.resume();
 }
 
 function stopSpeech() {
